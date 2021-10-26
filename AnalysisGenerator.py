@@ -141,6 +141,7 @@ def bar_with_stdev(summary_result, summary_grp, sheet_list, id_len):
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     sheet_name = "Summary"
+
     with pd.ExcelWriter(RESULT_SUMMARY_FILE, engine='xlsxwriter') as writer:
 
         summary_result.to_excel(writer, sheet_name=sheet_name)
