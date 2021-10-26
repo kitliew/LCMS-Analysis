@@ -13,7 +13,7 @@ import os
 # INIT files
 
 def result_dir():
-    # INIT files
+    """Create a directory with empty .xlsx file"""
     if not os.path.exists(RESULT_DIRECTORY):
         os.makedirs(RESULT_DIRECTORY)
     # INIT xlsx SHORT_WEIGHT_FILE
@@ -27,7 +27,7 @@ def result_dir():
 # Functions
 
 def plot_box_swarm(df, plot_title, x_axis="Sample ID", y_axis="Normalized"):
-    """Plot box-plot and swarm plot for data list.
+    """Generate Box-plot overlap Swarm plot img file.
 
     Args:
         df (list of list): List of lists with data to be plotted.
@@ -79,28 +79,30 @@ def lcms_summary():
 
     """
 
-    # read weight file
+    # Read weight file
     weight_df = pd.read_csv(WEIGHT_FILE)
 
-    # create dict of dataframes
+    # Read report file containing multiple sheets: create dict of dataframes
     df = pd.read_excel(SHORT_REPORT, sheet_name=None, skiprows=3, header=1, na_values="NF")
 
     summary_grp = []    # to store summary of each sheet
     sheet_list = []     # list containing sheet name
     id_len = 0          # number of Sample ID
 
-    # iterate through dict of dataframes
+    # Iterate through dict of dataframes
     for k, v in df.items():
 
+        # By default will generate an empty "Component sheet"
         if k == "Component" or k == "Summary":
-            continue
+            continue    # do nothing to these 2 sheets
 
-        # update sheet_list
+        # Update sheet_list
         sheet_list.append(k)
 
+        # Only openpyxl can append multiple sheets
         with pd.ExcelWriter(SHORT_WEIGHT_FILE, mode='a', engine='openpyxl', if_sheet_exists="replace") as writer:
 
-            # merge df at Filename col
+            # Merge df at Filename col
             result_df = pd.merge(left=v, right=weight_df, on="Filename")
             result_df["Normalized"] = result_df["Area Ratio"] / result_df["Sample wt"]      # normalized
 
@@ -120,9 +122,10 @@ def lcms_summary():
             # write processed data to Summary sheet
             result_df.to_excel(writer, sheet_name=k, index=False, header=True, na_rep="NA")
 
-    # combine all the compounds (mean, std)
+    # Combine all the compounds (mean, std)
     summary_result = pd.concat(summary_grp, axis=1)
 
+    # Append sheet with data
     with pd.ExcelWriter(SHORT_WEIGHT_FILE, mode='a', engine='openpyxl', if_sheet_exists="replace") as writer:
         summary_result.to_excel(writer, sheet_name="Summary", na_rep="NA")  # the data goes on this sheet
 
@@ -130,6 +133,12 @@ def lcms_summary():
 
 
 def bar_with_stdev(summary_result, summary_grp, sheet_list, id_len):
+    """
+    Create graph using xlsxwriter.
+    It is interactive like how one would create graph in excel.
+    Type of graph: bar graph with stdev as error bar.
+    """
+
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     sheet_name = "Summary"
     with pd.ExcelWriter(RESULT_SUMMARY_FILE, engine='xlsxwriter') as writer:
@@ -141,18 +150,17 @@ def bar_with_stdev(summary_result, summary_grp, sheet_list, id_len):
         worksheet = writer.sheets[sheet_name]
 
         # loop
-        x_row = id_len - 1
-
         for i in range(len(summary_grp)):
+
             page = "Summary"
             start_row = 3
-            end_row = 3 + id_len - 1
-            mean_start_col = (i * 2) + 1
-            mean_end_col = mean_start_col
-            error_start_col = (i + 1) * 2
-            error_end_col = error_start_col
+            end_row = 3 + id_len - 1        # python format [start:end]
+            mean_col = (i * 2) + 1
+            error_col = (i + 1) * 2
+
+            # Convert Row-column notation and A1 notation
             page_ref = "=" + page + "!"
-            error_range = page_ref + str(xl_range_abs(start_row, error_start_col, end_row, error_end_col))
+            error_range = page_ref + str(xl_range_abs(start_row, error_col, end_row, error_col))
 
             # Create a chart object.
             chart = workbook.add_chart({'type': 'column'})
@@ -162,9 +170,10 @@ def bar_with_stdev(summary_result, summary_grp, sheet_list, id_len):
                 'name': str(sheet_list[i])
             })
 
+            # Add series details
             chart.add_series({
                 'categories': [page, start_row, 0, end_row, 0],
-                'values': [page, start_row, mean_start_col, end_row, mean_end_col],
+                'values': [page, start_row, mean_col, end_row, mean_col],
                 'y_error_bars': {
                     'type': 'custom',
                     'plus_values': error_range,
