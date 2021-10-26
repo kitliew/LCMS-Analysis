@@ -36,7 +36,7 @@ Templates/reference attached in Example folder.
 3. Select reportfile.xls
 4. A Result folder will be generated in the same directory as the reportfile.xls
 
-(https://github.com/kitliew/LCMS-Analysis/blob/main/Example/Results/Summary_graph_example.PNG)
+![alt text](https://github.com/kitliew/LCMS-Analysis/blob/main/Example/Results/Summary_graph_example.PNG)
 
 Feel free to use and comment.
 
