@@ -110,7 +110,7 @@ def lcms_summary():
             plot_box_swarm(result_df, k)
 
             # data for summary page
-            summary = result_df.groupby(["Sample ID"]).agg({"Normalized": ["mean", "std"]})
+            summary = result_df.groupby(["Sample ID"], sort=False).agg({"Normalized": ["mean", "std"]})
             summary = summary.rename(columns={"Normalized": k})
             summary_grp.append(summary)
 
@@ -119,7 +119,7 @@ def lcms_summary():
             if sample_ngrp > id_len:
                 id_len = sample_ngrp
 
-            # write processed data to Summary sheet
+            # write processed data respective sheet
             result_df.to_excel(writer, sheet_name=k, index=False, header=True, na_rep="NA")
 
     # Combine all the compounds (mean, std)
@@ -193,8 +193,8 @@ def bar_with_stdev(summary_result, summary_grp, sheet_list, id_len):
 
 if __name__ == "__main__":
     Tk().withdraw()
-    WEIGHT_FILE = askopenfilename()
-    SHORT_REPORT = askopenfilename()
+    WEIGHT_FILE = askopenfilename(title="WEIGHT file", filetypes=(("CSV files", "*.csv"), ("all files", "*.*")))
+    SHORT_REPORT = askopenfilename(title="REPORT file", filetypes=(("XLSX files", "*.xls"), ("all files", "*.*")))
     BASE_DIR = os.path.dirname(SHORT_REPORT)
     RESULT_DIRECTORY = os.path.join(BASE_DIR, "Results")        # dir of result folder
     SHORT_WEIGHT_FILE = os.path.join(RESULT_DIRECTORY, "short_report_weight.xlsx")
