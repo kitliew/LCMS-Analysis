@@ -38,5 +38,8 @@ Templates/reference attached in Example folder.
 
 ![alt text](https://github.com/kitliew/LCMS-Analysis/blob/main/Example/Results/Summary_graph_example.PNG)
 
+![alt text](https://github.com/kitliew/LCMS-Analysis/blob/main/Example/Results/VitaminC.png)
+
+
 Feel free to use and comment.
 
