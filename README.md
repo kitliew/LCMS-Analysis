@@ -26,15 +26,16 @@ Step 6 - 8 is repetitive and time consuming for large dataset.
 
 
 Requirement:
-1. Report file in .xls format
-2. Weight file in .csv format, containing "Filename" column and "Sample wt" column (letter/space & case sensitive).
+1. Report file in .xlsx format
+2. Weight file in .xlsx format, containing "Filename" column and "Sample wt" column (position/loc sensitive).
 Templates/reference attached in Example folder.
  
 ## How To Use?
 1. Run AnalysisGenerator.py (Python required) **OR** "AnalysisGenerator Beta" > dist > AnalysisGenerator > AnalysisGenerator.exe
-2. Select weightfile.csv
-3. Select reportfile.xls
-4. A Result folder will be generated in the same directory as the reportfile.xls
+2. Input Internal Standard concentration
+3. Select weightfile.xlsx
+4. Select reportfile.xlsx
+5. A Result folder will be generated in the same directory
 
 ![alt text](https://github.com/kitliew/LCMS-Analysis/blob/main/Example/Results/Summary_graph_example.PNG)
 
