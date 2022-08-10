@@ -12,7 +12,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from tkinter import *
 from tkinter.filedialog import askopenfilename
-
+import sys
 
 DW_COLUMNS = ["Filename", "Sample wt"]
 RESULT_DIRECTORY = os.getcwd()
@@ -22,7 +22,8 @@ def combined_df(summary_file, weight_file):
 
     # to store ['mean', 'stdev'] for each compound/sheet
     summary_grp = []
-    # read summary_file.xlsx
+
+    # read summary_file.xls
     summary_df = pd.read_excel(summary_file, sheet_name=None, skiprows=3, header=1,
                                na_values="NF")   # sheet_name=None select all sheets
 
@@ -35,8 +36,13 @@ def combined_df(summary_file, weight_file):
     # merge each sheet with the DW sheet
     for sheet in summary_df:
 
+        # By default will generate an empty "Component Sheet"
+        if sheet == "Component":
+            continue    # do nothing to this sheet
+
         # current worksheet
         current_df = summary_df[sheet]
+
         # merge the two df
         merged_df = pd.merge(left=current_df, right=weight_df, on="Filename")
 
@@ -45,7 +51,6 @@ def combined_df(summary_file, weight_file):
 
         # write df to worksheet
         merged_df.to_excel(writer, sheet_name=sheet, index=False, na_rep="NA")
-        # result_df.to_excel(writer, sheet_name=sheet, index=False, header=True, na_rep="NA")
 
         # replace old df with the merged df
         summary_df[sheet] = merged_df
@@ -61,11 +66,14 @@ def combined_df(summary_file, weight_file):
     # convert groupby to df
     summary_result = pd.concat(summary_grp, axis=1)
 
+    # get len(set(Sample Id))
+    id_len = len(summary_result.index)
+
     # write the summary df to sheet
     summary_result.to_excel(writer, sheet_name="Summary", na_rep="NA")
 
     # generate bar graph on summary sheet
-    bar_with_stdev(writer, len(summary_df), list(summary_df.keys()), len(summary_grp))
+    bar_with_stdev(writer, len(summary_df), list(summary_df.keys()), id_len)
 
 
 def bar_with_stdev(writer, num_sheet, sheet_list, id_len):
@@ -171,8 +179,8 @@ if __name__ == "__main__":
     root.mainloop()
 
     Tk().withdraw()
-    WEIGHT_FILE = askopenfilename(title="WEIGHT file", filetypes=(("CSV files", "*.xlsx"), ("all files", "*.*")))
-    SHORT_REPORT = askopenfilename(title="REPORT file", filetypes=(("XLSX files", "*.xlsx"), ("all files", "*.*")))
+    WEIGHT_FILE = askopenfilename(title="WEIGHT file", filetypes=(("xlsx files", "*.xlsx"), ("all files", "*.*")))
+    SHORT_REPORT = askopenfilename(title="REPORT file", filetypes=(("XLS files", "*.xls"), ("all files", "*.*")))
     BASE_DIR = os.path.dirname(SHORT_REPORT)
     RESULT_DIRECTORY = os.path.join(BASE_DIR, "Results")  # dir of result folder
     RESULT_SUMMARY_FILE = os.path.join(RESULT_DIRECTORY, "Results.xlsx")
