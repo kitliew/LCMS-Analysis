@@ -142,7 +142,7 @@ def img_strip_box_plot(df, plot_title, x_axis="Sample ID", y_axis="Normalized va
 
     # plot data on Swarm plot and boxplot
     ax = sns.boxplot(x=x_axis, y=y_axis, data=df)
-    ax = sns.swarmplot(x=x_axis, y=y_axis, data=df, color=".25")
+    ax = sns.stripplot(x=x_axis, y=y_axis, data=df, color=".25")
 
     # y-axis label
     # y_unit = ""
